@@ -16,7 +16,7 @@ both the bandwidth and latency to improve upon bandwidth and latency estimation.
 
 ## Running a test
 
-Run a test as normal as defined in the README.md ofhttps://github.com/twitchtv/acm-mmsys-2020-grand-challenge).
+Run a test as normal as defined in the README.md of https://github.com/twitchtv/acm-mmsys-2020-grand-challenge.
 
 ## Authors
 
