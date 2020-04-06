@@ -46,8 +46,7 @@ function ThroughputHistory(config) {
     const THROUGHPUT_DECREASE_SCALE = 1.3;
     const THROUGHPUT_INCREASE_SCALE = 1.3;
 
-    // standard deviation window parameter
-    const STANDARD_DEVIATION_WINDOW = 20;
+    const STANDARD_DEVIATION_WINDOW = 10;
 
     // EWMA constants
     const EWMA_THROUGHPUT_SLOW_HALF_LIFE_SECONDS = 8;
@@ -91,6 +90,11 @@ function ThroughputHistory(config) {
         const downloadTimeInMilliseconds = (httpRequest._tfinish.getTime() - httpRequest.tresponse.getTime()) || 1; //Make sure never 0 we divide by this value. Avoid infinity!
         const downloadBytes = httpRequest.trace.reduce((a, b) => a + b.b[0], 0);
 
+        //Log statements for plotting
+        console.log("ThroughputHistory: Latency: ", latencyTimeInMilliseconds, Date.now());
+        console.log("ThroughputHistory: DownloadTime: ", downloadTimeInMilliseconds, Date.now());
+        console.log("ThroughputHistory: Downloadbytes: ", downloadBytes, Date.now());
+
         let throughputMeasureTime;
         if (settings.get().streaming.lowLatencyEnabled) {
             throughputMeasureTime = httpRequest.trace.reduce((a, b) => a + b.d, 0);
@@ -99,6 +103,7 @@ function ThroughputHistory(config) {
         }
 
         const throughput = Math.round((8 * downloadBytes) / throughputMeasureTime); // bits/ms = kbits/s
+        // console.log("ThroughputHistoryThroughput: ". throughput, Date.now());
 
         checkSettingsForMediaType(mediaType);
 
@@ -184,6 +189,7 @@ function ThroughputHistory(config) {
     }
 
         function getSTD(isThroughput, mediaType, isDynamic) {
+        // only two moving average methods defined at the moment
         return settings.get().streaming.abr.movingAverageMethod !== Constants.MOVING_AVERAGE_SLIDING_WINDOW ?
             getAverageEwma(isThroughput, mediaType) : getSTDSlidingWindow(isThroughput, mediaType, isDynamic);
     }
@@ -197,7 +203,7 @@ function ThroughputHistory(config) {
             return NaN;
         }
 
-        var devWindow = (arr.length >= STANDARD_DEVIATION_WINDOW) ? -STANDARD_DEVIATION_WINDOW : -arr.length;
+        var devWindow = (arr.length >= STANDARD_DEVIATION_WINDOW) ? -STANDARD_DEVIATION_WINDOW: -arr.length; //BY TREY
         arr = arr.slice(devWindow); // still works if sampleSize too large
         var avg = arr[0];
         if(arr.length >= 1) {
@@ -215,10 +221,12 @@ function ThroughputHistory(config) {
         var stdDev = Math.sqrt(avgSquareDiff);
         if(isThroughput) {
             if(stdDevThroughputHistory.indexOf(stdDev) == -1 && stdDev != 0) {
+                console.log("ThroughputHistory: ThroughputStdDev: ", stdDev, Date.now());
                 stdDevThroughputHistory.push(stdDev);
             }
         } else {
             if(stdDevLatencyHistory.indexOf(stdDev) == -1 && stdDev != 0) {
+                console.log("ThroughputHistory: LatencyStdDev: ", stdDev, Date.now());
                 stdDevLatencyHistory.push(stdDev);
             }
         }
@@ -253,10 +261,12 @@ function ThroughputHistory(config) {
         var stdDev = Math.sqrt(avgSquareDiff);
         if(isThroughput) {
             if(stdDevThroughputHistory.indexOf(stdDev) == -1 && stdDev != 0) {
+                console.log("ThroughputHistory: ThroughputStdDev: ", stdDev, Date.now());
                 stdDevThroughputHistory.push(stdDev);
             }
         } else {
             if(stdDevLatencyHistory.indexOf(stdDev) == -1 && stdDev != 0) {
+                console.log("ThroughputHistory: LatencyStdDev: ", stdDev, Date.now());
                 stdDevLatencyHistory.push(stdDev);
             }
         }

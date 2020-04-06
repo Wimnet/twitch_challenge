@@ -108,50 +108,133 @@ function ABRRulesCollection(config) {
         });
     }
 
+    //Main Logging function for plot scripts
     function getActiveRules(srArray) {
+        let allRules = {};
+          srArray.forEach(function (thisRule) {
+              console.log(thisRule.reason);
+              allRules[thisRule.reason.rule] = thisRule.reason
+          });
+
+        if (allRules['BolaRule'] != undefined) {
+
+        let bola_throughput, bola_latency, bola_quality
+        bola_throughput = allRules['BolaRule']['throughput'];
+        bola_latency = allRules['BolaRule']['latency']
+        bola_quality = allRules['BolaRule']['quality']
+        if (bola_throughput == undefined){bola_throughput = -2;}
+        if (bola_latency == undefined){bola_latency = -2;}
+        if (bola_quality == undefined){bola_quality = -2;}
+        console.log("bola Throughput: ", bola_throughput, Date.now());
+        console.log("bola Latency: ", bola_latency, Date.now());
+        console.log("bola Quality: ", bola_quality, Date.now());
+        }
+
+        if (allRules['ThroughputRule'] != undefined) {
+
+        let throurule_throughput, throurule_latency, throughput_quality
+        throurule_throughput = allRules['ThroughputRule']['throughput'];
+        throurule_latency = allRules['ThroughputRule']['latency']
+        throughput_quality = allRules['ThroughputRule']['quality']
+        if (throurule_throughput == undefined){throurule_throughput = -2}
+        if (throurule_latency == undefined){throurule_latency = -2;}
+        if (throughput_quality == undefined){throughput_quality = -2;}
+        console.log("ThroughputRule Throughput: ", throurule_throughput, Date.now());
+        console.log("ThroughputRule Latency: ", throurule_latency, Date.now());
+        console.log("ThroughputRule Quality: ", throughput_quality, Date.now());
+        }
+        
+        if (allRules['InsufficientBufferRule'] != undefined) {
+        let isbfr_bitrate, isbfr_latency, isbfr_quality
+        isbfr_bitrate = allRules['InsufficientBufferRule']['bitrate'];
+        isbfr_latency = allRules['InsufficientBufferRule']['latency'];
+        isbfr_quality = allRules['InsufficientBufferRule']['quality']
+        if (isbfr_bitrate == undefined){isbfr_bitrate = -2;}
+        if (isbfr_latency == undefined){isbfr_latency = -2;}
+        if (isbfr_quality == undefined){isbfr_quality = -2;}
+        console.log("InsufficientBufferRule Bitrate: ", isbfr_bitrate, Date.now());
+        console.log("InsufficientBufferRule Latency: ", isbfr_latency, Date.now());
+        console.log("InsufficientBufferRule Quality: ", isbfr_quality, Date.now());
+        }
+
+        if (allRules['StallionRule'] != undefined) {
+        let isbfr_bitrate, isbfr_latency, isbfr_quality
+        isbfr_bitrate = allRules['StallionRule']['bitrate'];
+        isbfr_latency = allRules['StallionRule']['latency'];
+        isbfr_quality = allRules['StallionRule']['quality']
+        if (isbfr_bitrate == undefined){isbfr_bitrate = -2;}
+        if (isbfr_latency == undefined){isbfr_latency = -2;}
+        if (isbfr_quality == undefined){isbfr_quality = -2;}
+        console.log("StallionRule Bitrate: ", isbfr_bitrate, Date.now());
+        console.log("StallionRule Latency: ", isbfr_latency, Date.now());
+        console.log("StallionRule Quality: ", isbfr_quality, Date.now());
+        }
+        
+
         return srArray.filter(sr => sr.quality > SwitchRequest.NO_CHANGE);
     }
 
     function getMinSwitchRequest(srArray) {
+        let activeRules = {};
+          srArray.forEach(function (thisRule) {
+              activeRules[thisRule.reason.rule] = thisRule.reason
+          });
+
+        console.log("Active Rules: ", activeRules, Date.now());
+
         const values = {};
         let i,
             len,
             req,
             newQuality,
-            quality;
+            quality,
+            valueQuality,
+            reason;
 
         if (srArray.length === 0) {
             return;
         }
 
-        values[SwitchRequest.PRIORITY.STRONG] = SwitchRequest.NO_CHANGE;
-        values[SwitchRequest.PRIORITY.WEAK] = SwitchRequest.NO_CHANGE;
-        values[SwitchRequest.PRIORITY.DEFAULT] = SwitchRequest.NO_CHANGE;
+        values[SwitchRequest.PRIORITY.STRONG] = {quality: SwitchRequest.NO_CHANGE, reason: null};
+        values[SwitchRequest.PRIORITY.WEAK] = {quality: SwitchRequest.NO_CHANGE, reason: null};
+        values[SwitchRequest.PRIORITY.DEFAULT] = {quality: SwitchRequest.NO_CHANGE, reason: null};
 
         for (i = 0, len = srArray.length; i < len; i += 1) {
             req = srArray[i];
             if (req.quality !== SwitchRequest.NO_CHANGE) {
-                values[req.priority] = values[req.priority] > SwitchRequest.NO_CHANGE ? Math.min(values[req.priority], req.quality) : req.quality;
+                if (values[req.priority].quality > SwitchRequest.NO_CHANGE){
+                  reason = values[req.priority].quality < req.quality ? values[req.priority].reason : req.reason;
+                }else {
+                  reason = req.reason;
+                }
+
+                valueQuality = values[req.priority].quality > SwitchRequest.NO_CHANGE ? Math.min(values[req.priority].quality, req.quality) : req.quality;
+
+                values[req.priority] = {quality: valueQuality, reason: reason};
             }
         }
 
-        if (values[SwitchRequest.PRIORITY.WEAK] !== SwitchRequest.NO_CHANGE) {
+        if (values[SwitchRequest.PRIORITY.WEAK].quality !== SwitchRequest.NO_CHANGE) {
             newQuality = values[SwitchRequest.PRIORITY.WEAK];
         }
 
-        if (values[SwitchRequest.PRIORITY.DEFAULT] !== SwitchRequest.NO_CHANGE) {
+        if (values[SwitchRequest.PRIORITY.DEFAULT].quality !== SwitchRequest.NO_CHANGE) {
             newQuality = values[SwitchRequest.PRIORITY.DEFAULT];
         }
 
-        if (values[SwitchRequest.PRIORITY.STRONG] !== SwitchRequest.NO_CHANGE) {
+        if (values[SwitchRequest.PRIORITY.STRONG].quality !== SwitchRequest.NO_CHANGE) {
             newQuality = values[SwitchRequest.PRIORITY.STRONG];
         }
 
-        if (newQuality !== SwitchRequest.NO_CHANGE) {
-            quality = newQuality;
+        if (newQuality.quality !== SwitchRequest.NO_CHANGE) {
+            quality = newQuality.quality;
+            reason = newQuality.reason
         }
 
-        return SwitchRequest(context).create(quality);
+        const newSwitchRequest = SwitchRequest(context).create(quality);
+        newSwitchRequest.reason = reason;
+
+        return newSwitchRequest;
     }
 
     function getMaxQuality(rulesContext) {
@@ -159,6 +242,9 @@ function ABRRulesCollection(config) {
         const activeRules = getActiveRules(switchRequestArray);
         const maxQuality = getMinSwitchRequest(activeRules);
 
+        if (maxQuality){
+          console.log("Chosen Rule: ", maxQuality.reason.rule.replace( /[\r\n]+/gm, "" ), Date.now());
+        }
         return maxQuality || SwitchRequest(context).create();
     }
 
@@ -166,7 +252,10 @@ function ABRRulesCollection(config) {
         const abandonRequestArray = abandonFragmentRules.map(rule => rule.shouldAbandon(rulesContext));
         const activeRules = getActiveRules(abandonRequestArray);
         const shouldAbandon = getMinSwitchRequest(activeRules);
-
+        if (shouldAbandon != undefined){
+            console.log("shouldAbandonFragment", Date.now());
+        }
+        
         return shouldAbandon || SwitchRequest(context).create();
     }
 
