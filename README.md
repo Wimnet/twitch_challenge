@@ -4,7 +4,10 @@ Our challenge submission Stallion (**STA**ndard **L**ow-**LA**tency v**I**deo c*
 a sliding window to measure the mean and standard deviation of
 both the bandwidth and latency to improve upon bandwidth and latency estimation.
 
-Our paper submission can be found [here.](https://wimnet.ee.columbia.edu/wp-content/uploads/2020/06/stallion.pdf)
+Submission Links:
+1. [Paper Submission](https://wimnet.ee.columbia.edu/wp-content/uploads/2020/06/stallion.pdf)
+2. [Video Submission](https://www.youtube.com/watch?v=IKVdZxZanp4)
+3. [Video Presentation Slides](https://wimnet.ee.columbia.edu/wp-content/uploads/2020/06/Stallion_twitch_challenge.pdf)
 
 ## About the Grand Challenge
 
@@ -28,7 +31,7 @@ The purpose of this challenge is to design an adaptation algorithm tailored towa
 
 ## Running a test
 
-Run a test as normal as defined in the README.md of the Challenge's [Github.](https://github.com/twitchtv/acm-mmsys-2020-grand-challenge)
+Once setup following the steps above, tests can be ran as normal as defined in the README.md of the Challenge's [Github.](https://github.com/twitchtv/acm-mmsys-2020-grand-challenge)
 
 ## Authors
 
