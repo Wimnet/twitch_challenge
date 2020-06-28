@@ -4,6 +4,8 @@ Our challenge submission Stallion (**STA**ndard **L**ow-**LA**tency v**I**deo c*
 a sliding window to measure the mean and standard deviation of
 both the bandwidth and latency to improve upon bandwidth and latency estimation.
 
+This submission won the 3rd place in the Twitch ACM MMSys 2020 Grand Challenge. [Announcement](https://twitter.com/acmmmsys/status/1271097399658917889)
+
 Submission Links:
 1. [Paper Submission](https://wimnet.ee.columbia.edu/wp-content/uploads/2020/06/stallion.pdf)
 2. [Video Submission](https://www.youtube.com/watch?v=IKVdZxZanp4)
